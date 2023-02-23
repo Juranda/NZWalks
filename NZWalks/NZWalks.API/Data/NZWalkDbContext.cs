@@ -3,10 +3,10 @@ using NZWalks.API.Models.Domain;
 
 namespace NZWalks.API.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class NZWalkDbContext : DbContext
     {
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public NZWalkDbContext(DbContextOptions<NZWalkDbContext> options) : base(options) { }
 
         public DbSet<Region> Regions { get; set; }
         public DbSet<Walk> Walks { get; set; }
