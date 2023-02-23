@@ -4,6 +4,14 @@ namespace NZWalks.API.Repositories
 {
     public interface IRegionRepository
     {
-        public Task<IEnumerable<Region>> GetAllAsync();
+        Task<IEnumerable<Region>> GetAllAsync();
+
+        Task<Region> GetAsync(Guid id);
+        
+        Task<Region> PostAsync(Region region);
+        
+        Task<Region> DeleteAsync(Guid id);
+
+        Task<Region> PutAsync(Guid id, Region region);
     }
 }
