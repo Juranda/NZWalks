@@ -1,83 +1,107 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.Models.Domain;
+using NZWalks.API.Models.DTO;
+using NZWalks.API.Repositories;
 
 namespace NZWalks.API.Controllers
 {
+    [Route("[controller]")]
+    [ApiController]
     public class WalksController : Controller
     {
-        // GET: WalksController
-        public ActionResult Index()
+        private readonly IWalkRepository walkRepository;
+        private readonly IMapper mapper;
+
+        public WalksController(IWalkRepository walkRepository, IMapper mapper)
         {
-            return View();
+            this.walkRepository = walkRepository;
+            this.mapper = mapper;
         }
 
-        // GET: WalksController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return View();
+            var walksDomain = await walkRepository.GetAllAsync();
+            var walksDTO = mapper.Map<List<Models.DTO.Walk>>(walksDomain);
+            return Ok(walksDTO);
         }
 
-        // GET: WalksController/Create
-        public ActionResult Create()
+        [HttpGet]
+        [Route("{id:guid}")]
+        [ActionName("GetWalkAsync")]
+        public async Task<IActionResult> GetWalkAsync(Guid id)
         {
-            return View();
+            var walk = await walkRepository.GetWalkAsync(id);
+
+            if(walk == null) return NotFound();
+
+            var walkDTO = mapper.Map<Models.DTO.Walk>(walk);
+
+            return Ok(walkDTO);
         }
 
-        // POST: WalksController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Post(AddWalkRequest walkRequest)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            //var walk = new Models.Domain.Walk
+            //{
+            //    Name = walkRequest.Name,
+            //    Length = walkRequest.Length,
+            //    RegionId = walkRequest.RegionId,
+            //    WalkDifficultyId = walkRequest.WalkDifficultyId
+            //};
+
+            var walk = mapper.Map<Models.Domain.Walk>(walkRequest);
+
+            walk = await walkRepository.PostWalkAsync(walk);
+
+            //var walkDTO = new Models.DTO.Walk
+            //{
+            //    Name = walk.Name,
+            //    Length = walk.Length,
+            //    RegionId = walkRequest.RegionId,
+            //    WalkDifficultyId = walkRequest.WalkDifficultyId
+            //};
+
+            var walkDTO = mapper.Map<Models.DTO.Walk>(walk);
+
+            return CreatedAtAction(nameof(GetWalkAsync), new { id = walkDTO.Id }, walkDTO);
         }
 
-        // GET: WalksController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteWalk(Guid id)
         {
-            return View();
+            var walk = await walkRepository.DeleteWalkAsync(id);
+
+            if (walk is null) return NotFound();
+
+            var walkDTO = new Models.DTO.Walk
+            {
+                Id = walk.Id,
+                Name = walk.Name,
+                Length = walk.Length,
+                RegionId = walk.RegionId,
+                WalkDifficultyId = walk.WalkDifficultyId
+            };
+
+            return Ok(walkDTO);
         }
 
-        // POST: WalksController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> PutWalkAsync([FromRoute] Guid id, [FromBody] PutWalkRequest putWalkRequest)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            var walk = mapper.Map<Models.Domain.Walk>(putWalkRequest);
 
-        // GET: WalksController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+            walk = await walkRepository.PutWalkAsync(id, walk);
 
-        // POST: WalksController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            if (walk is null) return NotFound();
+
+            var walkDTO = mapper.Map<Models.DTO.Walk>(walk);
+
+            return Ok(walkDTO);
         }
     }
 }

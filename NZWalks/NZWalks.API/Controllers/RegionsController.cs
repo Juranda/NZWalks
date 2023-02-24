@@ -86,16 +86,18 @@ namespace NZWalks.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> PutRegionAsync([FromRoute] Guid id, [FromBody] Models.DTO.PutRegionRequest regionRequest)
         {
-            var region = new Models.Domain.Region
-            {
-                Id = id,
-                Code = regionRequest.Code,
-                Name = regionRequest.Name,
-                Area = regionRequest.Area,
-                Lat = regionRequest.Lat,
-                Long = regionRequest.Long,
-                Population = regionRequest.Population
-            };
+            //var region = new Models.Domain.Region
+            //{
+            //    Id = id,
+            //    Code = regionRequest.Code,
+            //    Name = regionRequest.Name,
+            //    Area = regionRequest.Area,
+            //    Lat = regionRequest.Lat,
+            //    Long = regionRequest.Long,
+            //    Population = regionRequest.Population
+            //};
+
+            var region = mapper.Map<Models.Domain.Region>(regionRequest);
 
             region = await regionRepository.PutAsync(id, region);
 
@@ -104,16 +106,18 @@ namespace NZWalks.API.Controllers
                 return NotFound();
             }
 
-            var regionDTO = new Models.DTO.Region
-            {
-                Id = region.Id,
-                Code = region.Code,
-                Name = region.Name,
-                Area = region.Area,
-                Lat = region.Lat,
-                Long = region.Long,
-                Population = region.Population
-            };
+            //var regionDTO = new Models.DTO.Region
+            //{
+            //    Id = region.Id,
+            //    Code = region.Code,
+            //    Name = region.Name,
+            //    Area = region.Area,
+            //    Lat = region.Lat,
+            //    Long = region.Long,
+            //    Population = region.Population
+            //};
+
+            var regionDTO = mapper.Map<Models.DTO.Region>(region);
 
             return Ok(regionDTO);
         }
