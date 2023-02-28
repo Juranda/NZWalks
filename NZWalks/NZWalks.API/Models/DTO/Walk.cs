@@ -11,7 +11,7 @@
 
         //Navigation props
 
-        public Region Region { get; set; }
+        //public Region Region { get; set; }
         public WalkDifficulty WalkDifficulty { get; set; }
     }
 }

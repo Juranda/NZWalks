@@ -1,5 +1,4 @@
 ﻿namespace NZWalks.API.Models.DTO
-
 {
     public class Region
     {
@@ -12,6 +11,6 @@
         public long Population { get; set; }
 
         ////Navigation props
-        //public IEnumerable<Walk> Walks { get; set; }
+        public IEnumerable<Walk> Walks { get; set; }
     }
 }

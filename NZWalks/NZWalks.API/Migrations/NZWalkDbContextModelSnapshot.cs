@@ -11,7 +11,7 @@ using NZWalks.API.Data;
 namespace NZWalks.API.Migrations
 {
     [DbContext(typeof(NZWalkDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    partial class NZWalkDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -65,7 +65,7 @@ namespace NZWalks.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("NZWalks.API.Models.Domain.User", b =>
@@ -96,7 +96,7 @@ namespace NZWalks.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("NZWalks.API.Models.Domain.User_Role", b =>

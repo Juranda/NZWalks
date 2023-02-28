@@ -15,21 +15,15 @@ namespace NZWalks.API.Repositories
 
         public async Task<IEnumerable<Walk>> GetAllAsync()
         {
-            return await context.Walks
-                .Include(x => x.Region)
-                .Include(x => x.WalkDifficulty)
-                .ToListAsync();
+            return await context.Walks.ToListAsync();
         }
 
-        public async Task<Walk> GetWalkAsync(Guid id)
+        public async Task<Walk> GetAsync(Guid id)
         {
-            return await context.Walks
-                .Include(x => x.Region)
-                .Include(x => x.WalkDifficulty)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            return await context.Walks.FirstOrDefaultAsync(w => w.Id == id);
         }
 
-        public async Task<Walk> PostWalkAsync(Walk walk)
+        public async Task<Walk> PostAsync(Walk walk)
         {
             walk.Id = Guid.NewGuid();
             await context.Walks.AddAsync(walk);
@@ -38,7 +32,7 @@ namespace NZWalks.API.Repositories
             return walk;
         }
 
-        public async Task<Walk> DeleteWalkAsync(Guid id)
+        public async Task<Walk> DeleteAsync(Guid id)
         {
             var walk = await context.Walks.FindAsync(id);
 
@@ -50,7 +44,7 @@ namespace NZWalks.API.Repositories
             return walk;
         }
 
-        public async Task<Walk> PutWalkAsync(Guid id, Walk newWalk)
+        public async Task<Walk> PutAsync(Guid id, Walk newWalk)
         {
             var walk = await context.Walks
                 .Include(w => w.Region)

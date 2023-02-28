@@ -17,12 +17,16 @@ namespace NZWalks.API.Repositories
         {
             return await context.Regions
                 .Include(x => x.Walks)
+                .ThenInclude(x => x.WalkDifficulty)
                 .ToListAsync();
         }
 
         public async Task<Region> GetAsync(Guid id)
         {
-            return await context.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.Regions
+                .Include(x => x.Walks)
+                .ThenInclude(x => x.WalkDifficulty)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Region> PostAsync(Region region)

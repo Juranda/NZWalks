@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NZWalks.API.Repositories;
 
@@ -18,6 +19,7 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllRegionsAsync()
         {
             var regions = await regionRepository.GetAllAsync();
@@ -29,6 +31,7 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         [Route("{id:guid}")]
         [ActionName("GetRegionAsync")]
+        [Authorize]
         public async Task<IActionResult> GetRegionAsync(Guid id)
         {
             var region = await regionRepository.GetAsync(id);
@@ -43,33 +46,19 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> PostRegionAsync(Models.DTO.AddRegionRequest region)
         {
-            var regionDomain = new Models.Domain.Region
-            {
-                Code = region.Code,
-                Name = region.Name,
-                Area = region.Area,
-                Lat = region.Lat,
-                Long = region.Long,
-                Population = region.Population
-            };
+            var regionDomain = mapper.Map<Models.Domain.Region>(region);
             regionDomain = await regionRepository.PostAsync(regionDomain);
-            var regionDTO = new Models.DTO.Region
-            {
-                Id = regionDomain.Id,
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                Area = regionDomain.Area,
-                Lat = regionDomain.Lat,
-                Long = regionDomain.Long,
-                Population = regionDomain.Population
-            };
+            var regionDTO = mapper.Map<Models.DTO.Region>(regionDomain);
+
             return CreatedAtAction(nameof(GetRegionAsync), new { id = regionDTO.Id }, regionDTO);
         }
 
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> DeleteRegionAsync(Guid id)
         {
             var region = await regionRepository.DeleteAsync(id);
@@ -84,19 +73,9 @@ namespace NZWalks.API.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> PutRegionAsync([FromRoute] Guid id, [FromBody] Models.DTO.PutRegionRequest regionRequest)
         {
-            //var region = new Models.Domain.Region
-            //{
-            //    Id = id,
-            //    Code = regionRequest.Code,
-            //    Name = regionRequest.Name,
-            //    Area = regionRequest.Area,
-            //    Lat = regionRequest.Lat,
-            //    Long = regionRequest.Long,
-            //    Population = regionRequest.Population
-            //};
-
             var region = mapper.Map<Models.Domain.Region>(regionRequest);
 
             region = await regionRepository.PutAsync(id, region);
@@ -105,17 +84,6 @@ namespace NZWalks.API.Controllers
             {
                 return NotFound();
             }
-
-            //var regionDTO = new Models.DTO.Region
-            //{
-            //    Id = region.Id,
-            //    Code = region.Code,
-            //    Name = region.Name,
-            //    Area = region.Area,
-            //    Lat = region.Lat,
-            //    Long = region.Long,
-            //    Population = region.Population
-            //};
 
             var regionDTO = mapper.Map<Models.DTO.Region>(region);
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NZWalks.API.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class AddingUsers : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,6 +27,34 @@ namespace NZWalks.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Role",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WalkDifficulty",
                 columns: table => new
                 {
@@ -36,6 +64,31 @@ namespace NZWalks.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WalkDifficulty", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User_Roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User_Roles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_Roles_Role_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_User_Roles_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,6 +119,16 @@ namespace NZWalks.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_User_Roles_RoleId",
+                table: "User_Roles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_Roles_UserId",
+                table: "User_Roles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Walks_RegionId",
                 table: "Walks",
                 column: "RegionId");
@@ -79,7 +142,16 @@ namespace NZWalks.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "User_Roles");
+
+            migrationBuilder.DropTable(
                 name: "Walks");
+
+            migrationBuilder.DropTable(
+                name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Regions");
